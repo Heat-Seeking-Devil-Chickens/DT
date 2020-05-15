@@ -17,7 +17,7 @@ import Youtube from "./Youtube";
 import unsplashId from "../../unsplash_id";
 
 const Home = () => {
-  const [current, setCurrent] = useState({});  
+  const [current, setCurrent] = useState({});
   // current is the bigAssObject we receive from "grabLocationData" that feeds most of the components with data
   const [username, setUserName] = useState("");
   // for welcoming
@@ -29,7 +29,7 @@ const Home = () => {
   // save users search in case he wants to add it to favs(we only save his query, not actual country data
   const [iconStatus, setFavIcon] = useState(false);
   // FavIcon condition
-  
+
   // since its different every time)
 
   // initial load
@@ -37,11 +37,8 @@ const Home = () => {
     fetch("http://localhost:8080/api/user")
       .then((res) => res.json())
       .then((user) => {
-        console.log('Api/user path')
         setUserName(user.display_name);
-        console.log('line 42 before email')
         setEmail(user.email);
-        console.log('line 44 after email')
         console.log('Updating favs: ', user.favsArray)
         setFavorites(user.favsArray);
       })
@@ -63,13 +60,13 @@ const Home = () => {
         setCurrent(response);
         setQuery(email + ", " + response.userQuery);
       });
-    
+
     fetch(
       `https://api.unsplash.com/search/photos?query=${locationString},skyline&client_id=${unsplashId}`
     )
       .then((data) => data.json())
       .then((response) => {
-        console.log("This is the response from unsplash: ", response);
+        // console.log("This is the response from unsplash: ", response);
         const gradientOpacity = 0.2;
         const rand = Math.floor(Math.random() * 1000);
         document.body.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, ${gradientOpacity}), rgba(0, 0, 0, ${gradientOpacity})), url(${response.results[1].urls.full})`;
@@ -114,7 +111,7 @@ const Home = () => {
   }
 
   // Determine star icon based on whether current city is a favorite or not
-  const favIcon =( 
+  let favIcon = (
     <span className="favIcon empty-icon">
       <FAIcon
         onClick={() => {
@@ -124,24 +121,27 @@ const Home = () => {
         icon={regStar}
         style={{ color: "white" }}
       />
-  </span>
+    </span>
   );
-  // const values = current.userQuery.split(",").map((elem) => elem.trim());
-  // // If the favorites array is not empty
-  // if (favorites.length > 0){
-  //   // Check if favorites has an object where the city is equal to our current city.
-  //   const favIcon = favorites.some(obj => obj['city']=values[0]) ? (
-  //     <span className="favIcon solid-icon">
-  //       <FAIcon
-  //         onClick={() => {
-  //           toggleFav(query);
-  //         }}
-  //         size="2x"
-  //         icon={solidStar}
-  //         style={{ color: "yellow" }}
-  //       />
-  //     </span>) : favIcon
-  // }
+  const values = current.userQuery.split(",").map((elem) => elem.trim());
+  // If the favorites array is not empty
+  if (favorites.length > 0) {
+    if (favorites.some(obj => obj['city'] === values[0])) {
+      favIcon = (
+        <span className="favIcon solid-icon">
+          <FAIcon
+            onClick={() => {
+              toggleFav(query);
+            }}
+            size="2x"
+            icon={solidStar}
+            style={{ color: "yellow" }}
+          />
+        </span>
+      );
+    }
+  }
+  console.log("This is the favIcon in Home:", favIcon)
 
   return (
     <div id="main">
@@ -174,7 +174,7 @@ const Home = () => {
           ></iframe>
         </div> */}
         <Attractions attractions={current.travelInfo} />
-        
+
       </div>
       <div id="rightColumn">
         <Favorites

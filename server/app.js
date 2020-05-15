@@ -18,12 +18,9 @@ app.get('/verify', userController.authenticate, (req, res) => {
 });
 
 // separate authorization route to prevent spotify code from being retained in 'home' url
-app.get('/authorize', userController.authorize, cookieController.setCookie, (req, res) =>
-  res.redirect('/home')
-);
+app.get('/authorize', userController.authorize, cookieController.setCookie, (req, res) => res.redirect('/home'));
 
-app.get('/home', cookieController.checkCookie, userController.getUserData, (req, res) =>
-  res.status(200).sendFile(path.resolve(__dirname, '..', 'dist', 'index.html'))
+app.get('/home', cookieController.checkCookie, userController.getUserData, (req, res) => res.status(200).sendFile(path.resolve(__dirname, '..', 'dist', 'index.html')),
 );
 
 app.get(
@@ -43,7 +40,6 @@ app.post(
   queryController.addFav,
   queryController.getFavs,
   (req, res) => {
-    console.log('**** inside the toggleFav *******');
     return res.status(200).send(res.locals.user.favsArray);
   }
 );
@@ -53,17 +49,14 @@ app.get(
   userController.getUserData,
   queryController.createOrFindUser,
   queryController.getFavs,
-  (req, res) => {
-    console.log('***** inside the api user ******');
-    return res.status(200).send(res.locals.user);
-  }
+  (req, res) => res.status(200).send(res.locals.user),
 );
 
 app.use(
   '/',
   express.static('./dist', {
     index: 'index.html',
-  })
+  }),
 );
 
 // catch-all route handler for any requests to an unknown route
